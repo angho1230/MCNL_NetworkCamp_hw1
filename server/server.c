@@ -16,13 +16,10 @@ int main(int argc, char* argv[]){
     FILE * fp;
     char pattern[PSIZE];
     char buf[BUF_SIZE];
-    char message[1024];
     int read_cnt;
     int str_len;
 
     file* files = get_files();
-    /*
-*/
     struct sockaddr_in serv_adr, clnt_adr;
     socklen_t clnt_adr_sz;
 
@@ -61,18 +58,19 @@ int main(int argc, char* argv[]){
     int c;
     while(1){
         c = read(clnt_sd, &c, sizeof(int));
-        
+        printf("read : %c\n", c);
         if(c == '*'){
             break;
         }
-        write(clnt_sd, message, str_len);
         int idx = 0;
         while(files[idx].dir != 0x0){
-            
+            char message[1024];
             sprintf(message, "%d:%s(%ld)\n", idx+1, files[idx].dir, files[idx].size);
             idx++;
-            write(clnt_sd, message, strlen(message));
+            printf("%s", message);
+            write(clnt_sd, message, strlen(message)+1);
         }
+        printf("Done\n");
     }
     printf("Closing.....");
     close(serv_sd);

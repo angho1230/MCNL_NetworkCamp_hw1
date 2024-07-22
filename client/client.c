@@ -44,8 +44,9 @@ int main(int argc, char * argv[]){
     }
     while((c = getchar()) != '*'){
         write(sock, &c, sizeof(int));
-        while((str_len = read(sock, &message, BUF_SIZE-1)) != 0){
+        while(( str_len = read(sock, message, BUF_SIZE)) != 0){
             printf("%s", message);
+            fflush(stdout);
         }
     }
     printf("Closing....\n");
