@@ -32,7 +32,7 @@ int main(int argc, char * argv[]){
     int fcount;
     char pattern[1024];
     int sock;
-    char message[BUF_SIZE];
+    char buf[BUF_SIZE];
     int str_len;
     struct sockaddr_in serv_adr;
 
@@ -132,20 +132,24 @@ int main(int argc, char * argv[]){
                 break;
         }
     }
-
+    
     write(sock, &filetop[idx].idx, sizeof(int));
-    while(1){
-        str_len = read(sock, message, BUF_SIZE-1);
-        if(message[str_len-1] == EOF){
-            message[str_len-1] = '\0';
-            printf("%s", message);
-            break;
+    printf("Downloading %s", filetop[idx].dir);
+    int read_len;
+    int dsize = filetop[idx].size;
+    read_size = 0;
+    FILE* fp = fopen(filetop[idx].dir, "wb");
+    while(dsize > read_size){
+        read_len = read(sock, buf, BUF_SIZE);
+        read_size += read_len;
+        int wlen = fwrite(buf, 1, read_len, fp);
+        while(wlen < read_len){
+            fwrite(buf + wlen, 1, read_len - wlen, fp);
         }
-        message[str_len] = '\0';
-        printf("%s", message);
     }
-
+    printf("Download complete\n");
     printf("Closing....\n");
+    fflush(stdin);
     close(sock);
     return 0;
 }

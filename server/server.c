@@ -62,14 +62,22 @@ int main(int argc, char* argv[]){
     }
     printf("Sending files done\n");
     int idx;
-    int len;
-    while((len = read(clnt_sd, &idx, sizeof(int))) != 0);
+    int len = 0;
+    read(clnt_sd, &idx, sizeof(int));
     printf("selected %d\n", idx);
-    fflush(stdin);
     printf("sending %s\n", files[idx].dir);
-    
+    fp = fopen(files[idx].dir, "r");
 
-    //send file
+    while(1){
+        read_cnt = fread(buf, 1, BUF_SIZE, fp);
+        if(read_cnt < BUF_SIZE){
+            len += write(clnt_sd, buf, read_cnt);
+            break;
+        }
+        len += write(clnt_sd, buf, read_cnt);
+    }
+
+    printf("sent %d bytes\n", len);
     close(serv_sd);
     close(clnt_sd);
 }
