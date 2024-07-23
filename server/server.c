@@ -1,4 +1,5 @@
 #include <netinet/in.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,25 +55,21 @@ int main(int argc, char* argv[]){
     else{
         printf("Connected client\n");
     }
-
-    int c;
-    while(1){
-        c = read(clnt_sd, &c, sizeof(int));
-        printf("read : %c\n", c);
-        if(c == '*'){
-            break;
-        }
-        int idx = 0;
-        while(files[idx].dir != 0x0){
-            char message[1024];
-            sprintf(message, "%d:%s(%ld)\n", idx+1, files[idx].dir, files[idx].size);
-            idx++;
-            printf("%s", message);
-            write(clnt_sd, message, strlen(message)+1);
-        }
-        printf("Done\n");
+    int fcount = get_file_count();
+    write(clnt_sd, &fcount, sizeof(int));
+    for(int i = 0; i < fcount; i++){
+        write(clnt_sd, &files[i], sizeof(file));
     }
-    printf("Closing.....");
+    printf("Sending files done\n");
+    int idx;
+    int len;
+    while((len = read(clnt_sd, &idx, sizeof(int))) != 0);
+    printf("selected %d\n", idx);
+    fflush(stdin);
+    printf("sending %s\n", files[idx].dir);
+    
+
+    //send file
     close(serv_sd);
     close(clnt_sd);
 }

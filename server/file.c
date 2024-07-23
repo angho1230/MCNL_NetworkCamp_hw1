@@ -28,6 +28,10 @@ file* get_files(){
     return files;
 }
 
+int get_file_count(){
+    return fcount;
+}
+
 int file_iter(char * dir){
     DIR * d;
     struct dirent* dirst;
@@ -75,8 +79,11 @@ int file_iter(char * dir){
 
 file make_file(char * dir, off_t size){
     file f; 
-    f.dir = dir;
+    strcpy(f.dir, dir);
     f.size = size;
+    f.idx = fcount;
+    f.score = 0;
+    free(dir);
     return f;
 }
 
