@@ -296,6 +296,14 @@ void red () {
     printf("\033[1;31m");
 }
 
+void highlight(){
+    printf("\033[0;100m");
+}
+
+void highlight_red(){
+    printf("\033[1;31;100m");
+}
+
 void reset () {
     printf("\033[0m");
 }
@@ -306,22 +314,31 @@ void color_output(const char* pattern, const file * fsort, int fcount, int idx){
         int pi = 0;
         int len = strlen(fsort[i].dir);
         if(idx == i){
-            printf(">%d | ", fsort[i].idx);
+            highlight();
+            printf(">%-5d | ", fsort[i].idx);
         }
         else{
-            printf(" %d | ", fsort[i].idx);
+            printf(" %5d | ", fsort[i].idx);
         }
         for(int j = 0; j < len; j++){
             if(tolower(fsort[i].dir[j]) == tolower(pattern[pi])){
-                red();
-                printf("%c", fsort[i].dir[j]);
-                reset();
-                pi++;
+                if(i == idx){
+                    highlight_red();
+                    printf("%c", fsort[i].dir[j]);
+                    highlight();
+                    pi++;
+                }else{
+                    red();
+                    printf("%c", fsort[i].dir[j]);
+                    reset();
+                    pi++;
+                }
             }else{
                 printf("%c", fsort[i].dir[j]);
             }
         }
         printf(" (%lu)\n", fsort[i].size);
+        reset();
     }
 }
 
